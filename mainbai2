@@ -1,101 +1,71 @@
+package baii2;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        QuanLyHangHoa quanLy = new QuanLyHangHoa();
+        HangHoaManager manager = new HangHoaManager();
 
-        int choice = 0;
-        while (choice != 4) {
-            System.out.println("----- MENU -----");
-            System.out.println("1. Thêm hàng hóa");
-            System.out.println("2. In danh sách hàng hóa");
-            System.out.println("3. Đánh giá hàng hóa");
-            System.out.println("4. Thoát");
-            System.out.print("Nhập lựa chọn: ");
-            choice = scanner.nextInt();
-            scanner.nextLine(); // Đọc bỏ dòng new line
+        boolean continueAdding = true;
+        while (continueAdding) {
+            System.out.println("Thêm sản phẩm mới");
+            System.out.print("Nhập mã hàng: ");
+            String maHang = scanner.next();
+            System.out.print("Nhập tên hàng: ");
+            String tenHang = scanner.next();
+            System.out.print("Nhập số lượng tồn: ");
+            int soLuongTon = scanner.nextInt();
+            System.out.print("Nhập đơn giá: ");
+            double donGia = scanner.nextDouble();
 
-            switch (choice) {
-                case 1:
-                    themHangHoa(scanner, quanLy);
-                    break;
-                case 2:
-                    quanLy.inDanhSachHangHoa();
-                    break;
-                case 3:
-                    danhGiaHangHoa(scanner, quanLy);
-                    break;
-                case 4:
-                    System.out.println("Thoát chương trình.");
-                    break;
-                default:
-                    System.out.println("Lựa chọn không hợp lệ. Vui lòng chọn lại.");
-            }
-        }
+            System.out.print("Loại hàng (1 - Hàng điện máy, 2 - Hàng thực phẩm, 3 - Hàng sành sứ): ");
+            int loaiHang = scanner.nextInt();
 
-        scanner.close();
-    }
+            HangHoa hangHoa;
+            if (loaiHang == 1) {
+                System.out.print("Nhập thời gian bảo hành (tháng): ");
+                int thoiGianBaoHanh = scanner.nextInt();
+                System.out.print("Nhập công suất (KW): ");
+                double congSuat = scanner.nextDouble();
 
-    public static void themHangHoa(Scanner scanner, QuanLyHangHoa quanLy) {
-        System.out.println("----- THÊM HÀNG HÓA -----");
-        System.out.println("1. Hàng thực phẩm");
-        System.out.println("2. Hàng sành sứ");
-        System.out.println("3. Hàng điện máy");
-        System.out.print("Chọn loại hàng hóa: ");
-        int loaiHang = scanner.nextInt();
-        scanner.nextLine(); // Đọc bỏ dòng new line
-
-        System.out.print("Nhập mã hàng: ");
-        String maHang = scanner.nextLine();
-        System.out.print("Nhập tên hàng: ");
-        String tenHang = scanner.nextLine();
-        System.out.print("Nhập số lượng tồn: ");
-        int soLuongTon = scanner.nextInt();
-        System.out.print("Nhập đơn giá: ");
-        double donGia = scanner.nextDouble();
-
-        switch (loaiHang) {
-            case 1:
-                System.out.print("Nhập ngày sản xuất: ");
-                String ngaySanXuat = scanner.next();
-                System.out.print("Nhập ngày hết hạn: ");
-                String ngayHetHan = scanner.next();
-                scanner.nextLine(); //
+                hangHoa = new HangDienMay(maHang, tenHang, soLuongTon, donGia, thoiGianBaoHanh, congSuat);
+            } else if (loaiHang == 2) {
+                System.out.print("Nhập ngày sản xuất (d/M/yyyy): ");
+                String ngaySanXuatStr = scanner.next();
+                LocalTime ngaySanXuat = LocalTime.parse(ngaySanXuatStr);
+                System.out.print("Nhập ngày hết hạn (d/M/yyyy): ");
+                String ngayHetHanStr = scanner.next();
+                LocalTime ngayHetHan = LocalTime.parse(ngayHetHanStr);
                 System.out.print("Nhập nhà cung cấp: ");
-                String nhaCungCap = scanner.nextLine();
-                HangThucPham hangThucPham = new HangThucPham(maHang, tenHang, soLuongTon, donGia, ngaySanXuat, ngayHetHan, nhaCungCap);
-                quanLy.themHangHoa(hangThucPham);
-                break;
-            case 2:
+                String nhaCungCap = scanner.next();
+
+                hangHoa = new HangThucPham(maHang, tenHang, soLuongTon, donGia, LocalDate.parse(ngaySanXuatStr), LocalDate.parse(ngayHetHanStr), nhaCungCap);
+
+            } else if (loaiHang == 3) {
                 System.out.print("Nhập nhà sản xuất: ");
                 String nhaSanXuat = scanner.next();
-                System.out.print("Nhập ngày nhập kho: ");
-                String ngayNhapKho = scanner.next();
-                scanner.nextLine(); // Đọc bỏ dòng new line
-                HangSanhSu hangSanhSu = new HangSanhSu(maHang, tenHang, soLuongTon, donGia, nhaSanXuat, ngayNhapKho);
-                quanLy.themHangHoa(hangSanhSu);
-                break;
-            case 3:
-                System.out.print("Nhập thời gian bảo hành: ");
-                int thoiGianBaoHanh = scanner.nextInt();
-                System.out.print("Nhập công suất: ");
-                double congSuat = scanner.nextDouble();
-                HangDienMay hangDienMay = new HangDienMay(maHang, tenHang, soLuongTon, donGia, thoiGianBaoHanh, congSuat);
-                quanLy.themHangHoa(hangDienMay);
-                break;
-            default:
-                System.out.println("Lựa chọn không hợp lệ. Không thêm hàng hóa.");
-        }
-    }
+                System.out.print("Nhập ngày nhập kho (d/M/yyyy): ");
+                String ngayNhapKhoStr = scanner.next();
 
-    public static void danhGiaHangHoa(Scanner scanner, QuanLyHangHoa quanLy) {
-        System.out.print("Nhập mã hàng hóa cần đánh giá: ");
-        String maHang = scanner.nextLine();
-        HangHoa hangHoa = quanLy.timHangHoa(maHang);
-        if (hangHoa != null) {
-            hangHoa.danhGia();
-        } else {
-            System.out.println("Không tìm thấy hàng hóa với mã " + maHang);
+                hangHoa = new HangSanhSu(maHang, tenHang, soLuongTon, donGia, nhaSanXuat, LocalDate.parse(ngayNhapKhoStr));
+
+            } else {
+                System.out.println("Loại hàng không hợp lệ.");
+                continue;
+            }
+
+            manager.addHangHoa(hangHoa);
+
+            System.out.print("Tiếp tục thêm hàng hóa? (y/n): ");
+            String choice = scanner.next();
+            continueAdding = choice.equalsIgnoreCase("y");
         }
+
+
+        System.out.println("\nDanh sách hàng hóa:");
+        manager.printHangHoaList();
     }
 }
