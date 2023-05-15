@@ -1,0 +1,69 @@
+
+package com.mycompany.order;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Scanner;
+
+public class Main {
+    public static void main(String[] args) {
+        // Nhập thông tin đơn hàng
+        try (Scanner scanner = new Scanner(System.in)) {
+            // Nhập thông tin đơn hàng
+            System.out.print("Ma HD: ");
+            int orderID = scanner.nextInt();
+            scanner.nextLine(); // Đọc dòng mới sau khi nhập số nguyên
+            System.out.print("Ngay Lap Hoa Đon (dd-mm-yyyy): ");
+            String orderDateString = scanner.nextLine();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+            LocalDate orderDate = LocalDate.parse(orderDateString, formatter);
+            // Tạo đơn hàng
+            Order order = new Order(orderID, orderDate);
+            // Nhập số lượng sản phẩm từ người dùng
+            System.out.print("So Luong San Pham Muon Xuat HD: ");
+            int numOfProducts = scanner.nextInt();
+            scanner.nextLine(); // Đọc dòng mới sau khi nhập số nguyên
+            // Nhập thông tin sản phẩm và số lượng từ người dùng
+            for (int i = 0; i < numOfProducts; i++) {
+                System.out.println("SP " + (i + 1));
+                System.out.print("MA SP: ");
+                String productID = scanner.nextLine();
+                
+                System.out.print("Mo Ta: ");
+                String description = scanner.nextLine();
+                
+                System.out.print("Đon Gia: ");
+                double price = scanner.nextDouble();
+                
+                System.out.print("So Luong: ");
+                int quantity = scanner.nextInt();
+                scanner.nextLine(); // Đọc dòng mới sau khi nhập số nguyên
+                
+                // Tạo sản phẩm và thêm vào đơn hàng
+                Product product = new Product(productID, description, price);
+                order.addLineItem(product, quantity);
+            }   // Tính tổng tiền hóa đơn
+            double totalCharge = order.calcTotalCharge();
+            // In thông tin hóa đơn và chi tiết đơn hàng ra màn hình
+            System.out.println("Hoa ĐoN");
+            System.out.println("Ma HD: " + order.getOrderID());
+            System.out.println("Ngay lap hoa don: " + order.getOrderDate());
+            System.out.println("Tong tien thanh toan: " + totalCharge + " VND");
+            System.out.println("STT  |  Ma SP | Mo ta                | Đon gia  |So luong  |Thanh tien");
+             
+            ArrayList<OrderDetail> lineItems = order.getLineItems();
+            for (int i = 0; i < lineItems.size(); i++) {
+                OrderDetail lineItem = lineItems.get(i);
+                Product product = lineItem.getProduct();
+                int quantity = lineItem.getQuantity();
+                double totalPrice = lineItem.calcTotalPrice();
+                System.out.printf("%-4s | %-6s | %-20s | %-7s | %-8s | %-10s\n",
+                        (i + 1), product.getProductID(), product.getDescription(),
+                        product.getPrice(), quantity, totalPrice);
+                 
+            }
+            // Đóng Scanner
+        }
+    }
+}
